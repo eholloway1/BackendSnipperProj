@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,11 @@ namespace Snipper.server.Controllers
     [ApiController]
     public class SnippetsController : ControllerBase
     {
+
+        public static List<Snippet> snippets = new List<Snippet>();
+
+        public static long uniqueId = snippets.Count;
+
         private readonly SnippetContext _context;
 
         public SnippetsController(SnippetContext context)
@@ -22,20 +28,29 @@ namespace Snipper.server.Controllers
 
         // GET: api/Snippets
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Snippet>>> GetSnippets()
+
+        public ActionResult<List<Snippet>> GetSnippets(string? lang = null)
         {
-            return await _context.Snippets.ToListAsync();
+            if(lang == null)
+            {
+                return snippets;
+            }
+
+            List<Snippet> filteredSnippets = snippets.Where(snippet => snippet.language == lang).ToList();
+
+            return filteredSnippets;
         }
 
         // GET: api/Snippets/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Snippet>> GetSnippet(long id)
+        public ActionResult<Snippet> GetSnippet(long id)
         {
-            var snippet = await _context.Snippets.FindAsync(id);
+
+            Snippet? snippet = snippets.Find(snippet => snippet.id == id);
 
             if (snippet == null)
             {
-                return NotFound();
+                return NotFound("Snippet not found.");
             }
 
             return snippet;
@@ -46,28 +61,10 @@ namespace Snipper.server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSnippet(long id, Snippet snippet)
         {
-            if (id != snippet.id)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(snippet).State = EntityState.Modified;
+            var index = snippets.FindIndex(snippet => snippet.id == id);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SnippetExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            snippets[index] = snippet;
 
             return NoContent();
         }
@@ -75,10 +72,10 @@ namespace Snipper.server.Controllers
         // POST: api/Snippets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Snippet>> PostSnippet(Snippet snippet)
+        public ActionResult<Snippet> PostSnippet(Snippet snippet)
         {
-            _context.Snippets.Add(snippet);
-            await _context.SaveChangesAsync();
+            snippet.id = ++uniqueId;
+            snippets.Add(snippet);
 
             return CreatedAtAction("GetSnippet", new { id = snippet.id }, snippet);
         }
@@ -87,14 +84,9 @@ namespace Snipper.server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSnippet(long id)
         {
-            var snippet = await _context.Snippets.FindAsync(id);
-            if (snippet == null)
-            {
-                return NotFound();
-            }
+            var index = snippets.FindIndex(snippet => snippet.id == id);
 
-            _context.Snippets.Remove(snippet);
-            await _context.SaveChangesAsync();
+            snippets.RemoveAt(index);
 
             return NoContent();
         }
