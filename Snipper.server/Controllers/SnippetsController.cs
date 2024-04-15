@@ -28,6 +28,7 @@ namespace Snipper.server.Controllers
 
         // GET: api/Snippets
         [HttpGet]
+
         public ActionResult<List<Snippet>> GetSnippets(string? lang = null)
         {
             if(lang == null)

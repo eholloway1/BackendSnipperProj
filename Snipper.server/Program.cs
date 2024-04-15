@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Snipper.server.Models;
 using Snipper.server.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
