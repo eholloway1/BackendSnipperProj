@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿//using Microsoft.EntityFrameworkCore;
 
-namespace Snipper.server.Models
-{
-    public class SnippetContext : DbContext
-    {
-        public SnippetContext(DbContextOptions<SnippetContext> options) 
-            : base(options) 
-        { }
+//namespace Snipper.server.Models
+//{
+//    public class SnippetContext : DbContext
+//    {
+//        public SnippetContext(DbContextOptions<SnippetContext> options) 
+//            : base(options) 
+//        { }
 
-        public DbSet<Snippet> Snippets { get; set; } = null;
-    }
-}
+//        public DbSet<Snippet> Snippets { get; set; } = null;
+//    }
+//}

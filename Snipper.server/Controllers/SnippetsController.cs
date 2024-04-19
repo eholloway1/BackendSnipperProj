@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Snipper.server.Models;
+using Snipper.server.Utilities;
 
 namespace Snipper.server.Controllers
 {
@@ -19,23 +22,41 @@ namespace Snipper.server.Controllers
 
         public static long uniqueId = snippets.Count;
 
-        private readonly SnippetContext _context;
+        private readonly ILogger<SnippetsController> _logger;
 
-        public SnippetsController(SnippetContext context)
+        private readonly EncryptUtility _encryptUtility;
+
+        public SnippetsController(ILogger<SnippetsController> logger, EncryptUtility encryptUtility)
         {
-            _context = context;
+            _logger = logger;
+            //assign encryptUtility instance to field to be able to use Encrypt and Decrypt functions
+            _encryptUtility = encryptUtility;
         }
+
+        //private readonly SnippetContext _context;
+
+        //public SnippetsController(SnippetContext context)
+        //{
+        //    _context = context;
+        //}
 
         // GET: api/Snippets
         [HttpGet]
         public ActionResult<List<Snippet>> GetSnippets(string? lang = null)
         {
+            List<Snippet> decodedSnippets = snippets.ConvertAll<Snippet>(snip => new Snippet
+            {
+                id = snip.id,
+                language = snip.language,
+                code = _encryptUtility.Decrypt(snip.code)
+            });
+
             if(lang == null)
             {
-                return snippets;
-            }
+                return decodedSnippets;
+            } 
 
-            List<Snippet> filteredSnippets = snippets.Where(snippet => snippet.language == lang).ToList();
+            List<Snippet> filteredSnippets = decodedSnippets.Where(snippet => snippet.language == lang).ToList();
 
             return filteredSnippets;
         }
@@ -44,7 +65,6 @@ namespace Snipper.server.Controllers
         [HttpGet("{id}")]
         public ActionResult<Snippet> GetSnippet(long id)
         {
-
             Snippet? snippet = snippets.Find(snippet => snippet.id == id);
 
             if (snippet == null)
@@ -52,19 +72,39 @@ namespace Snipper.server.Controllers
                 return NotFound("Snippet not found.");
             }
 
-            return snippet;
+            Snippet decodedSnippet = new Snippet
+            {
+                id = snippet.id,
+                language = snippet.language,
+                code = _encryptUtility.Decrypt(snippet.code)
+            };
+
+            return decodedSnippet;
         }
 
         // PUT: api/Snippets/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSnippet(long id, Snippet snippet)
+        [HttpPut]
+        public ActionResult PutSnippet(Snippet inSnippet)
         {
 
-            var index = snippets.FindIndex(snippet => snippet.id == id);
+            var index = snippets.FindIndex(snippet => snippet.id == inSnippet.id);
 
-            snippets[index] = snippet;
+            if (index == -1)
+            {
+                return BadRequest();
+            }
 
+            Snippet codedSnippet = new Snippet
+            {
+                id = inSnippet.id,
+                language = inSnippet.language,
+                code = _encryptUtility.Encrypt(inSnippet.code)
+            };
+
+            snippets[index] = codedSnippet;
+
+            
             return NoContent();
         }
 
@@ -74,6 +114,9 @@ namespace Snipper.server.Controllers
         public ActionResult<Snippet> PostSnippet(Snippet snippet)
         {
             snippet.id = ++uniqueId;
+
+            snippet.code = _encryptUtility.Encrypt(snippet.code);
+
             snippets.Add(snippet);
 
             return CreatedAtAction("GetSnippet", new { id = snippet.id }, snippet);
@@ -81,7 +124,7 @@ namespace Snipper.server.Controllers
 
         // DELETE: api/Snippets/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSnippet(long id)
+        public ActionResult DeleteSnippet(long id)
         {
             var index = snippets.FindIndex(snippet => snippet.id == id);
 
@@ -90,9 +133,9 @@ namespace Snipper.server.Controllers
             return NoContent();
         }
 
-        private bool SnippetExists(long id)
-        {
-            return _context.Snippets.Any(e => e.id == id);
-        }
+        //private bool SnippetExists(long id)
+        //{
+        //    return _context.Snippets.Any(e => e.id == id);
+        //}
     }
 }

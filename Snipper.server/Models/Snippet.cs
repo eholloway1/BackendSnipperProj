@@ -4,8 +4,8 @@
     {
         public long id {  get; set; }
 
-        public string? language { get; set; }
+        public required string language { get; set; }
 
-        public string? code { get; set; }
+        public required string code { get; set; }
     }
 }
