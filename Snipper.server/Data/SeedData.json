@@ -1,42 +1,43 @@
+//encrypted
 [
   {
     "id": 1,
     "language": "Python",
-    "code": "print('Hello, World!')"
+    "code": "Qgd9yai1u4p8q9UXGshQjmwhhsUO1YO8bXqNBRWlkXE="
   },
   {
     "id": 2,
     "language": "Python",
-    "code": "def add(a, b):\n    return a + b"
+    "code": "+CeIdRuAd/BluXknN5nz0fOITLRhMNNGqMbOHjuQf6M="
   },
   {
     "id": 3,
     "language": "Python",
-    "code": "class Circle:\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return 3.14 * self.radius ** 2"
+    "code": "GhEGdEC+Tr4YrQpKwPgqcwzu6ahGgLDui0GA9vA4jruu8ethm0nH6Eapr4ejogIExtP1fght+jqdzC6E9QDX5fvmTKQOZAHtKDev6S7WS93KUllIDHY83ZfK+UjQlAetZuIWJQBC/YbyB1gV38+IkkPl7XK4VggztwqMEJj35I7GAgLjI0uqntB+qut4EpdU"
   },
   {
     "id": 4,
     "language": "JavaScript",
-    "code": "console.log('Hello, World!');"
+    "code": "Mysdp+/e8Nl8LkrO4ewK0zhalPWGbskEDE4n+aim+E4="
   },
   {
     "id": 5,
     "language": "JavaScript",
-    "code": "function multiply(a, b) {\n    return a * b;\n}"
+    "code": "p3qrJ7F3pBFqJ3pqiR7RKK0pO/fHRZrlVc8weUpbTyWPrIpQASKsbG43c/ibxIPL"
   },
   {
     "id": 6,
     "language": "JavaScript",
-    "code": "const square = num => num * num;"
+    "code": "B75RbqFffU0MmwP7+LwCLn96I6I2udZmAP4GipHovIWSJKy9WBI+aF2DGaZ3fVBG"
   },
   {
     "id": 7,
     "language": "Java",
-    "code": "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}"
+    "code": "35R/tIZtW0dY0lL7acsqDwvroRC/29ijc15FnQ98bYMX6bP6hjbvAKz+V/kh5m52y5Pi+XcRYHYTsR044DhEjnO13YlQzyGrrPL/aBX7wCgs6BsbYkQLjtQjuw6InVIJKA3Eg79mXgKWkTIW1N8hSwHNigtcqh3r//0a+JSsUIc="
   },
   {
     "id": 8,
     "language": "Java",
-    "code": "public class Rectangle {\n    private int width;\n    private int height;\n\n    public Rectangle(int width, int height) {\n        this.width = width;\n        this.height = height;\n    }\n\n    public int getArea() {\n        return width * height;\n    }\n}"
+    "code": "5SBhut32CAh0zkD5AlWDaEdVfa+DfbGue6uCCSyeGUnVRuN4qs98T9NJY+GDkK36Z3bUp82miQ8n80S1zetofryXX9qdphfH5/I9E4cmmNKZV3tCmrVVNnSQPVVfwud12PNz85kekcmlVKVqbLVF6yEulJfdV8xjSyAARD0rKzSLc77GmNOiIok68UJQWrc+ZKXu6t4B/1zj99DQwKZDgMabhuQuD69M78vSeeqov6ZWxJBLu2FjTO55C+uwUwuAcq4dotb8encCTof/isSFvfnR+AACpEVU0NEYn3foc15ZPG0sqTV0LBY8Ikh1LAm4Ulx06JiQu+yDtBNhwA/iTw=="
   }
 ]

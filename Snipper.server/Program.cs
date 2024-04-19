@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Snipper.server.Models;
 using Snipper.server.Data;
+using Snipper.server.Utilities;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//use dependency injection to register EncryptUtility as a Singleton to be created once and used across the application when needed
+builder.Services.AddSingleton<EncryptUtility>();
+
+//todo: add IdentityService for basic auth
 
 var app = builder.Build();
 
