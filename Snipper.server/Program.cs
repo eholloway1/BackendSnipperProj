@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Snipper.server.Models;
 using Snipper.server.Data;
 using Snipper.server.Utilities;
+using Snipper.server.Services;
+using Snipper.server.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,8 +19,8 @@ builder.Services.AddSwaggerGen();
 
 //use dependency injection to register EncryptUtility as a Singleton to be created once and used across the application when needed
 builder.Services.AddSingleton<EncryptUtility>();
-
-//todo: add IdentityService for basic auth
+//add IdentityService for basic auth
+builder.Services.AddSingleton<IdentityService>();
 
 var app = builder.Build();
 
@@ -30,6 +32,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<BasicAuthMiddleware>();
 
 app.UseAuthorization();
 
