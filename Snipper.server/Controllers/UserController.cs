@@ -1,55 +1,77 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using Snipper.server.Models;
 
-//// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.AspNetCore.Mvc;
+using Snipper.server.Models;
+using Snipper.server.Services;
+using Snipper.server.Utilities;
 
-//namespace Snipper.server.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class UserController : ControllerBase
-//    {
-//        public static List<User> users = new List<User>();
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-//        public static long userId = users.Count;
+namespace Snipper.server.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
+    {
+        private readonly ILogger<UserController> _logger;
+        private readonly IdentityService _identityService;
 
-//        private readonly ILogger<UserController> _logger;
+        public UserController(ILogger<UserController> logger, IdentityService identityService)
+        {
+            _logger = logger;
+            _identityService = identityService;
+        }
 
-//        public UserController(ILogger<UserController> logger)
-//        {
-//            _logger = logger;
-//        }
+        // GET: api/<UserController>
+        [HttpGet]
+        public ActionResult<User> GetUser()
+        {
+            //fetch authenticated user from HttpContext Items
+            User? user = HttpContext.Items["User"] as User;
 
-//        // GET: api/<UserController>
-//        [HttpGet]
-//        public ActionResult<List<User>> GetUsers(string username, string password)
-//        {
-//            return new string[] { "value1", "value2" };
-//        }
+            //if null, the authentication failed
+            if(user == null)
+            {
+                return Unauthorized();
+            }
 
-//        // GET api/<UserController>/5
-//        [HttpGet("{id}")]
-//        public string Get(int id)
-//        {
-//            return "value";
-//        }
+            //don't send back hashed password
+            return Ok(new { id = user.id, Email = user.Email });
+        }
 
-//        // POST api/<UserController>
-//        [HttpPost]
-//        public void Post([FromBody] string value)
-//        {
-//        }
+        //// GET api/<UserController>/5
+        //[HttpGet("{id}")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
-//        // PUT api/<UserController>/5
-//        [HttpPut("{id}")]
-//        public void Put(int id, [FromBody] string value)
-//        {
-//        }
+        // POST api/<UserController>
+        [HttpPost]
+        public ActionResult<User> CreateUser()
+        {
+            //fetch created user from HttpContect Items
+            User? user = HttpContext.Items["User"] as User;
 
-//        // DELETE api/<UserController>/5
-//        [HttpDelete("{id}")]
-//        public void Delete(int id)
-//        {
-//        }
-//    }
-//}
+            //if null, the creation failed
+            if(user == null )
+            {
+                return BadRequest();
+            }
+
+            //Don't send back hashed password
+            return Ok(new {id =  user.id, Email = user.Email});
+        }
+
+        //// PUT api/<UserController>/5
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
+
+        //// DELETE api/<UserController>/5
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
+    }
+}
