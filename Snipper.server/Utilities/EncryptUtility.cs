@@ -15,8 +15,8 @@ namespace Snipper.server.Utilities
         public EncryptUtility(IConfiguration configuration)
         {
             //Read secret keys through dependency injeciton - if none exist, set to default strings
-            Key = Encoding.UTF8.GetBytes(configuration["AES_KEY"] ?? "e0ecc8d25dd8ff8348339ceef19a9f81");
-            IV = Encoding.UTF8.GetBytes(configuration["AES_IV"] ?? "32f3b2c782fb891a");
+            Key = Encoding.UTF8.GetBytes(configuration["AES_KEY"] ?? "07fda64e90d3779d2e170c79b957725c");
+            IV = Encoding.UTF8.GetBytes(configuration["AES_IV"] ?? "40959bcce5a3f765");
 
         }
 
