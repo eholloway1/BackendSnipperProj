@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.AspNetCore.Mvc;
 using Snipper.server.Models;
 using Snipper.server.Services;
 using Snipper.server.Utilities;
