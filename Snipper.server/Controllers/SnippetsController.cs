@@ -29,16 +29,11 @@ namespace Snipper.server.Controllers
         public SnippetsController(ILogger<SnippetsController> logger, EncryptUtility encryptUtility)
         {
             _logger = logger;
+
             //assign encryptUtility instance to field to be able to use Encrypt and Decrypt functions
             _encryptUtility = encryptUtility;
         }
 
-        //private readonly SnippetContext _context;
-
-        //public SnippetsController(SnippetContext context)
-        //{
-        //    _context = context;
-        //}
 
         // GET: api/Snippets
         [HttpGet]
