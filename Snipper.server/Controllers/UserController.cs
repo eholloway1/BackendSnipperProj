@@ -47,19 +47,41 @@ namespace Snipper.server.Controllers
 
         // POST api/<UserController>
         [HttpPost]
-        public ActionResult<User> CreateUser()
+        public ActionResult<User> CreateUser(User? inUser)
         {
-            //fetch created user from HttpContect Items
-            User? user = HttpContext.Items["User"] as User;
-
-            //if null, the creation failed
-            if(user == null )
+            if(inUser == null)
             {
-                return BadRequest();
+                //fetch created user from HttpContect Items
+                User? user = HttpContext.Items["User"] as User;
+
+                //if null, the creation failed
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                //Don't send back hashed password
+                return Ok(new { id = user.id, Email = user.Email });
+            }
+            else
+            {
+                HttpContext.Items.Add("User", inUser);
+                //fetch created user from HttpContect Items
+                User? user = HttpContext.Items["User"] as User;
+
+                //if null, the creation failed
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                //Don't send back hashed password
+                return Ok(new { id = user.id, Email = user.Email });
+
+
             }
 
-            //Don't send back hashed password
-            return Ok(new {id =  user.id, Email = user.Email});
+
         }
 
         //// PUT api/<UserController>/5
