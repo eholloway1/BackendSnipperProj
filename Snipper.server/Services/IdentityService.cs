@@ -1,11 +1,19 @@
 ﻿using System.Collections;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Snipper.server.Models;
 
 public interface IIdentityService
 {
     User CreateUser(string email, string password);
     User? AuthenticateUser(string email, string password);
+    string GenerateToken(User user);
+    User? GetUserById(long id);
 }
 
 namespace Snipper.server.Services
@@ -14,7 +22,12 @@ namespace Snipper.server.Services
     {
         private List<User> _users = new List<User>();
         private long uniqueId = 0;
+        private readonly JwtSettings? _jwtSettings;
 
+        public IdentityService(IOptions<JwtSettings> jwtSettings)
+        {
+            _jwtSettings = jwtSettings.Value;
+        }
         public User CreateUser(string email, string password)
         {
             var hashedPassword = "";
@@ -52,5 +65,73 @@ namespace Snipper.server.Services
             }
             return null;
         }
+
+        public string GenerateToken(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            if (_jwtSettings is null || _jwtSettings.Secret is null)
+            {
+                throw new ApplicationException("JwtSettings.Sercret is null. Ensure it is set in configuration.");
+            }
+
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public User? GetUserById(long id)
+        {
+            if(_users == null) return null;
+            return _users.Find(user => user.id == id);
+        }
+
+        public ClaimsPrincipal? CheckToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            if (_jwtSettings is null || _jwtSettings.Secret is null)
+            {
+                throw new ApplicationException("JwtSettings.Secret is null. Ensure it is set in configuration.");
+            }
+
+            var validations = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                ClockSkew = TimeSpan.Zero,
+            };
+            try
+            {
+                //Validate the token
+                var claims = handler.ValidateToken(token, validations, out var tokenSecure);
+                //If successful, return ClaimsPrincipal containing the claims from the token
+                return claims;
+            }
+            catch (SecurityTokenValidationException ex)
+            {
+                //Token validadtion failed
+                return null;
+            }
+            catch(ArgumentException ex)
+            {
+                return null;
+            }
+        }   
     }
 }
